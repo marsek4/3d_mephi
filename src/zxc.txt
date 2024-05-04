@@ -1,0 +1,344 @@
+/*!!!!!!!!!!!!!!!!!!!!!
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import Stats from 'three/examples/jsm/libs/stats.module';
+import { RGBELoaderUtils } from 'three/examples/jsm/loaders/RGBELoaderUtils';
+// import { EXRLoaderUtils } from 'three/examples/jsm/loaders/EXRLoaderUtils';
+
+const scene = new THREE.Scene();
+scene.add(new THREE.AxesHelper(50));
+
+// const light = new THREE.AmbientLight( 0x404040, 120 ); // soft white light
+// scene.add( light )
+
+const renderer = new THREE.WebGLRenderer();x``
+
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+
+pmremGenerator.compileEquirectangularShader();
+
+const loader = new THREE.RGBELoaderUtils();
+loader.setDataType(THREE.UnsignedByteType);
+loader.load('./source/meadow_2_4k.exr', function(texture) {
+    const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+    scene.background = envMap;
+    scene.environment = envMap;
+});
+
+
+// const light = new THREE.PointLight( 0xffffff, 200000, 1000 );
+// light.position.set( 30, 30, -110 ); // coord: x z y
+// scene.add( light );
+
+// const light = new THREE.PointLight(0xffffff, 100);
+// light.position.set(10, 10, 10);
+// // light.rotation(0, 0, 45);
+// //light.rotation.set(0, 0, 45);
+// scene.add(light);
+
+// const ambientLight = new THREE.AmbientLight();
+//const light1 = new THREE.DirectionalLight(0xffffff, 5);
+// light1.rotation.set(120, -45, -90);
+//light1.position.set(2, 10, 2);
+// scene.add(light1);
+
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+camera.position.set(7, 1, 7);
+
+// const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0xD3D3D3); // Устанавливаем цвет фона в белый
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 1, 0);
+
+//const material = new THREE.MeshNormalMaterial()
+
+const fbxLoader = new FBXLoader();
+fbxLoader.load(
+    './source/MEPhI.fbx',
+    (object) => {
+        // object.traverse(function (child) {
+        //     if ((child as THREE.Mesh).isMesh) {
+        //         // (child as THREE.Mesh).material = material
+        //         if ((child as THREE.Mesh).material) {
+        //             ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).transparent = false
+        //         }
+        //     }
+        // })
+        // object.scale.set(.01, .01, .01)
+        scene.add(object);
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+        console.log(error);
+    }
+);
+
+window.addEventListener('resize', onWindowResize, false);
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    render();
+}
+
+const stats = new Stats();
+document.body.appendChild(stats.dom);
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    controls.update();
+
+    render();
+
+    stats.update();
+}
+
+function render() {
+    renderer.render(scene, camera);
+}
+
+animate();
+
+// const button1 = document.querySelector('.btn1');
+// button1.addEventListener('click', function() {
+//     camera.position.set(10, 10, 10);
+// })
+
+// const button2 = document.querySelector('.btn2');
+// button1.addEventListener('click', function() {
+//     camera.position.set(10, 10, 10);
+// })
+
+// const button3 = document.querySelector('.btn3');
+// button1.addEventListener('click', function() {
+//     camera.position.set(10, 10, 10);
+// })
+!!!!!!!!!!!!!!!!!!!!!!*/
+
+/*2222222222222222222222
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+const scene = new THREE.Scene();
+const canvas = document.querySelector('.canvas');
+
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+};
+
+const cursor = {
+    x: 0,
+    y: 0,
+};
+
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
+camera.position.z = 5;
+camera.position.y = 0.8;
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
+scene.add(camera);
+
+const textureLoader = new THREE.TextureLoader();
+const alpha = textureLoader.load('/textures/mephi_alpha.png');
+const color = textureLoader.load('/textures/mephi_color.png');
+const height = textureLoader.load('/textures/mephi_height.png');
+const metal = textureLoader.load('textures/mephi_metal.png');
+const roughness = textureLoader.load('/textures/mephi_rough.png');
+// const norm = textureLoader.load('/textures/mephi_height.jpg');
+// const ao = textureLoader.load('/textures/ambientOcclusion.jpg');
+//const emissive = textureLoader.load('/textures/lava/emissive.jpg');
+
+const geometry = new THREE.SphereGeometry(2, 100, 100);
+const material = new THREE.MeshStandardMaterial({
+    map: color,
+    roughnessMap: roughness,
+    alphaMap: alpha,
+    metalnessMap: metal,
+    // height:  
+    //normalMap: norm,
+    // aoMap: ao,
+    // emissive: emissive,
+    // displacementMap: height,
+    // displacementScale: 0.3
+});
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+
+
+const light = new THREE.AmbientLight(0xefefef, 1.5);
+const pointLight = new THREE.PointLight(0xff9000, 3);
+pointLight.position.set(3, 3, 3);
+const pointLight2 = new THREE.PointLight(0x000000, 6);
+pointLight2.position.set(-3, -3, 3);
+
+scene.add(light);
+scene.add(pointLight);
+scene.add(pointLight2)
+
+const renderer = new THREE.WebGLRenderer({ canvas });
+renderer.setSize(sizes.width, sizes.height);
+renderer.render(scene, camera);
+
+const clock = new THREE.Clock();
+const tick = () => {
+    //stats.begin();
+    const delta = clock.getDelta();
+    mesh.rotation.y += delta * 0.2;
+
+    controls.update();
+    renderer.render(scene, camera);
+
+    //stats.end();
+    window.requestAnimationFrame(tick);
+};
+
+tick();
+
+window.addEventListener('resize', () => {
+    // Обновляем размеры
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    // Обновляем соотношение сторон камеры
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // Обновляем renderer
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.render(scene, camera);
+});
+
+222222222222222222222222*/
+
+/*
+
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
+
+
+const scene = new THREE.Scene();
+const canvas = document.querySelector('.canvas');
+
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+};
+
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
+camera.position.z = 5;
+camera.position.y = 0.8;
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
+scene.add(camera);
+
+const textureLoader = new THREE.TextureLoader();
+const alpha = textureLoader.load('./source/mephi_alpha.png');
+const color = textureLoader.load('./source/mephi_color.png');
+const height = textureLoader.load('./source/mephi_height.png');
+const metal = textureLoader.load('./source/mephi_metal.png');
+const roughness = textureLoader.load('./source/mephi_rough.png');
+
+const loader = new FBXLoader();
+loader.load('./source/MEPhI_fin.fbx', function (object) {
+    object.traverse(function (child) {
+        if (child.isMesh) {
+            child.material = new THREE.MeshPhysicalMaterial({
+                map: color,
+                roughnessMap: roughness,
+                alphaMap: alpha,
+                metalnessMap: metal,
+                // height:  
+                //normalMap: norm,
+                // aoMap: ao,
+                // emissive: emissive,
+                // displacementMap: height,
+                // displacementScale: 0.3
+            });
+        }
+    });
+    scene.add(object);
+});
+/*
+const exrLoader = new THREE.EXRLoader();
+
+// Загрузка .exr файла
+exrLoader.load('meadow_2_4k.exr', function(texture) {
+    // Создание материала с использованием текстуры
+    const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+
+    // Создание сферы для отображения фона
+    const geometry = new THREE.SphereGeometry(1000, 60, 40);
+    const backgroundMesh = new THREE.Mesh(geometry, material);
+
+    // Добавление фона к сцене
+    scene.add(backgroundMesh);
+});
+*/
+/*
+const light = new THREE.AmbientLight(0xefefef, 1.5);
+const pointLight = new THREE.PointLight(0xff9000, 3);
+pointLight.position.set(3, 3, 3);
+const pointLight2 = new THREE.PointLight(0x000000, 6);
+pointLight2.position.set(-3, -3, 3);
+
+scene.add(light);
+scene.add(pointLight);
+scene.add(pointLight2)
+
+const renderer = new THREE.WebGLRenderer({ canvas });
+renderer.setSize(sizes.width, sizes.height);
+renderer.render(scene, camera);
+
+const clock = new THREE.Clock();
+const tick = () => {
+    const delta = clock.getDelta();
+    //mesh.rotation.y += delta * 0.2;
+
+    controls.update();
+    renderer.render(scene, camera);
+
+    window.requestAnimationFrame(tick);
+};
+
+tick();
+
+window.addEventListener('resize', () => {
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.render(scene, camera);
+});
+/*
+"THREE.FBXLoader: ShininessExponent map is not supported in three.js, skipping texture."
+
+Это означает, что загрузчик FBX в библиотеке three.js обнаружил текстуру, которая предназначена для использования в расчете блеска объекта с помощью показателя блеска (shininess exponent). Однако, в three.js данная функциональность не поддерживается, поэтому текстура пропущена.
+"THREE.FBXLoader: ReflectionFactor map is not supported in three.js, skipping texture."
+
+Здесь сообщается, что обнаружена текстура, которая предназначена для использования в расчете отражения объекта с помощью коэффициента отражения (reflection factor). Однако, как и в предыдущем случае, данная функциональность не поддерживается в three.js, и текстура пропущена.
+*/
